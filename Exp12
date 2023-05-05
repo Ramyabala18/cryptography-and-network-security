@@ -1,0 +1,53 @@
+import numpy as np
+
+
+key = np.array([[9, 4], [5, 7]])
+alphabet = "abcdefghijklmnopqrstuvwxyz"
+def char_to_num(c):
+    return alphabet.index(c.lower())
+def num_to_char(n):
+    return alphabet[n % 26]
+def encrypt(message, key):
+  
+    message = np.array([char_to_num(c) for c in message])
+    message = np.reshape(message, (-1, 2)).T
+    
+    # Pad the message with zeros if necessary
+    if message.shape[1] % 2 == 1:
+        message = np.concatenate((message, np.zeros((2, 1))), axis=1)
+    
+    # Apply the key matrix to the message matrix
+    ciphertext = np.matmul(key, message) % 26
+    
+    # Convert the ciphertext matrix to a string
+    ciphertext = "".join([num_to_char(n) for n in ciphertext.T.flatten()])
+    
+    return ciphertext
+
+# Define a function to decrypt a ciphertext using the Hill cipher
+def decrypt(ciphertext, key):
+    # Calculate the inverse of the key matrix
+    det = key[0][0] * key[1][1] - key[0][1] * key[1][0]
+    inv_key = np.array([[key[1][1], -key[0][1]], [-key[1][0], key[0][0]]]) * det
+    inv_key = inv_key % 26
+    
+    # Convert the ciphertext to a matrix of column vectors
+    ciphertext = np.array([char_to_num(c) for c in ciphertext])
+    ciphertext = np.reshape(ciphertext, (-1, 2)).T
+    
+    # Apply the inverse of the key matrix to the ciphertext matrix
+    plaintext = np.matmul(inv_key, ciphertext) % 26
+    
+    # Convert the plaintext matrix to a string
+    plaintext = "".join([num_to_char(n) for n in plaintext.T.flatten()])
+    
+    return plaintext
+
+# Encrypt the message
+message = "meet me at the usual place at ten rather than eight oclock"
+ciphertext = encrypt(message, key)
+print("Ciphertext:", ciphertext)
+
+# Decrypt the ciphertext
+plaintext = decrypt(ciphertext, key)
+print("Plaintext:", plaintext)
