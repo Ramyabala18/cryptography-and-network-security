@@ -1,0 +1,19 @@
+import math
+
+# The Playfair cipher uses a 5x5 grid of letters
+# (omitting 'J' in this case) as its key
+KEY_SIZE = 25
+
+def num_possible_keys():
+    # The first letter in the key can be any of the 25 letters
+    # The second letter can be any of the remaining 24 letters
+    # The third letter can be any of the remaining 23 letters
+    # and so on...
+    total = 1
+    for i in range(KEY_SIZE):
+        total *= (KEY_SIZE - i)
+    return total
+
+# Calculate the number of possible keys and print it out
+keys = num_possible_keys()
+print(f"The Playfair cipher has approximately {math.log2(keys):.2f} possible keys.")
